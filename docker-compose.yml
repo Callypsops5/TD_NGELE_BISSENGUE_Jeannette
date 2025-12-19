@@ -1,0 +1,41 @@
+services:
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: dailyhabits-api
+
+    # Chargement des variables d'environnement
+    env_file:
+      - .env
+
+    environment:
+      DB_FILE: /data/db/dailyhabits.db
+      API_PORT: 8080
+
+    # Volume persistant pour la base SQLite
+    volumes:
+      - db_data:/data/db
+
+    # Exposition du port API
+    ports:
+      - "8080:8080"
+
+    # Réseau interne Docker
+    networks:
+      - dailyhabits-net
+
+    # 🔑 HEALTHCHECK CORRIGÉ (PROBLÈME RÉSOLU)
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s   # ⬅️ CRUCIAL : laisse le temps à init_db.py + Flask
+
+volumes:
+  db_data:
+
+networks:
+  dailyhabits-net:
+    driver: bridge

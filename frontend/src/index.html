@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Daily Habits</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        h1 { color: #333; }
+        ul { list-style: none; padding: 0; }
+        li { background: #f2f2f2; margin: 5px 0; padding: 10px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <h1>Daily Habits</h1>
+    <ul id="habits">Chargement...</ul>
+
+    <script>
+        async function fetchHabits() {
+            try {
+                const res = await fetch("/api/items"); // ✅ reverse proxy
+                const items = await res.json();
+
+                const list = document.getElementById("habits");
+                list.innerHTML = "";
+
+                items.forEach(item => {
+                    const li = document.createElement("li");
+                    li.textContent = `${item.name} - ${item.description}`;
+                    list.appendChild(li);
+                });
+            } catch (err) {
+                console.error(err);
+                document.getElementById("habits").textContent =
+                    "Erreur lors du chargement des données";
+            }
+        }
+
+        fetchHabits();
+    </script>
+</body>
+</html>
